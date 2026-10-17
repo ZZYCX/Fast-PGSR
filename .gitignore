@@ -73,6 +73,16 @@ CMakeFiles/
 /environments/exports-4090/4090-runtime-validation.txt
 /environments/exports-4090/gpu1-mask-import.txt
 /environments/exports-4090/gpu1-migration-inspection.txt
+/environments/exports-3090-32624-setup-only/build-install-summary.txt
+/environments/exports-3090-32624-setup-only/colmap-CMakeCache.txt
+/environments/exports-3090-32624-setup-only/final-migration-scope.json
+/environments/exports-3090-32624-setup-only/final-scope-input.json
+/environments/exports-3090-32624-setup-only/installation-result.json
+/environments/exports-3090-32624-setup-only/metadata-and-local-source-record.json
+/environments/exports-3090-32624-setup-only/project-source-final-archive.json
+/environments/exports-3090-32624-setup-only/source-manifest*.json
+/environments/exports-3090-32624-setup-only/framework-downloads-installed.json
+/environments/exports-3090-32624-setup-only/installed-downloads.json
 
 # Local environment secrets and editor files.
 .env

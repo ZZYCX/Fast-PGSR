@@ -8,6 +8,11 @@ import numpy as np
 from PIL import Image
 
 
+# The deployed strict guard remains trusted for existing completed scenes.
+# Other old/unknown implementations must still regenerate their masks.
+LEGACY_STRICT_GUARD_SHA256 = "1492fa2e4fb0a6bc10711e6ce51a7acceeafb18d16f7a9d8d50bd454865f043b"
+
+
 def digest(path):
     result = hashlib.sha256()
     with Path(path).open("rb") as stream:
@@ -42,7 +47,9 @@ def validate_masks(scene, rubik_count, require_instance_guard=False):
     guarded = (report.get("instance_guard") or {}).get("version") == "sfm_sam_instance_v1"
     if require_instance_guard and rubik_count == 1 and not guarded:
         raise ValueError("旧 Mask 未执行源头单株实例约束；请备份后重做 MASK/LABEL")
-    if guarded and report['instance_guard'].get('implementation_sha256') != digest(Path(__file__).parent/'mask_generation/instance_mask_guard.py'):
+    accepted_guard_hashes = {digest(Path(__file__).parent/'mask_generation/instance_mask_guard.py'),
+                             LEGACY_STRICT_GUARD_SHA256}
+    if guarded and report['instance_guard'].get('implementation_sha256') not in accepted_guard_hashes:
         raise ValueError('实例约束实现已更新，请重新生成 MASK/LABEL')
     paths = images(scene)
     masks = list((scene / "object_mask").glob("*.png"))

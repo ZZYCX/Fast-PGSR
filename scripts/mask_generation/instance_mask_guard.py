@@ -126,13 +126,38 @@ def build_support(scene, images, labels, init_idx):
 def refine_training_masks(scene, images, frame_results, init_idx, predictor):
     observations, target, neighbour, report = build_support(scene, images, frame_results, init_idx)
     report['frames'] = []
+    report['low_support_policy'] = 'retain_sam2_propagation'
+    report['low_support_frames'] = []
     for index in sorted(frame_results):
         previous = frame_results[index]
         rows, xy, cube_box = observations[index]
         positive = xy[target[rows]]
         negative = xy[neighbour[rows]]
         if len(positive) < 6:
-            raise RuntimeError(f'{images[index].name}: 目标SfM支持少于6点，禁止回退到旧掩码')
+            # Sparse tracks in one view do not invalidate the already propagated
+            # SAM2 mask. Keep its plant labels instead of making an unreliable
+            # tight crop, dropping a training view, or marking the plant background.
+            # The scene-level identity checks and final 3D cleanup still apply.
+            output = previous.copy()
+            cube_region = np.zeros_like(previous, dtype=bool)
+            x1, y1, x2, y2 = np.rint(cube_box).astype(int)
+            if x1 <= x2 and y1 <= y2:
+                cube_region[y1:y2+1, x1:x2+1] = True
+            output[(previous == 2) & ~cube_region] = 0
+            frame_results[index] = output
+            report['low_support_frames'].append(images[index].name)
+            report['frames'].append({'image': images[index].name,
+                'mode': 'sam2_propagation_low_sfm_support',
+                'observed_target_support': int(len(positive)),
+                'positive_points': 0, 'negative_points': 0,
+                'positive_hit': None, 'negative_hit': None,
+                'plant_pixels_before': int((previous == 1).sum()),
+                'plant_pixels_after': int((output == 1).sum()),
+                'rubik_pixels_before': int((previous == 2).sum()),
+                'rubik_pixels_after': int((output == 2).sum())})
+            print('[Instance guard warning]', images[index].name,
+                f'目标SfM支持={len(positive)}<6；保留SAM2传播掩码，跳过该帧SfM细化', flush=True)
+            continue
         h, w = previous.shape
         # Isolated SfM mismatches can land on the target stem. A distractor
         # negative needs a local group of at least three observed features.
@@ -186,6 +211,7 @@ def refine_training_masks(scene, images, frame_results, init_idx, predictor):
         output[(previous == 2)&cube_region] = 2
         frame_results[index] = output
         report['frames'].append({'image': images[index].name, 'positive_points': len(pos), 'negative_points': len(neg),
+            'mode': 'sfm_sam_refined', 'observed_target_support': int(len(positive)),
             'positive_hit': positive_hit, 'negative_hit': negative_hit,
             'plant_pixels_before': int((previous == 1).sum()), 'plant_pixels_after': int((output == 1).sum()),
             'rubik_pixels_before': int((previous==2).sum()), 'rubik_pixels_after':int((output==2).sum())})
