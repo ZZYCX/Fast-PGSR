@@ -1,0 +1,11 @@
+{
+  "pipeline": "run_batch_gpu1.sh",
+  "source": "/media/ubuntu2/A/LWL/code/Train/Fast-PGSR",
+  "script_sha256": "6fef4d9f4d8fbf9c6b796bed602cf633730a55db11aeadffddcb36cb83ee818e",
+  "environment_pinned_package_counts": {
+    "fast-pgsr-old": 93,
+    "Fast-Sam2": 132
+  },
+  "generated_at": "2026-10-16T22:03:41.475615",
+  "fresh_install_tested": false
+}

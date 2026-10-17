@@ -1,0 +1,9 @@
+# Install AFTER requirements-fast-pgsr-old.txt, from the project root:
+# python -m pip install --no-build-isolation --no-deps -r requirements-fast-pgsr-old-source.txt
+# Server PyTorch3D reports 0.7.1; original external source directory is unavailable.
+# Official v0.7.1 tag resolved to this commit; equivalence to local server edits is unverified.
+pytorch3d @ https://codeload.github.com/facebookresearch/pytorch3d/tar.gz/995b60e3b99faa1ee1bcdbe244426d54d98a7242
+./submodules/diff-gaussian-rasterization_fastgs
+./submodules/diff-plane-rasterization
+./submodules/simple-knn
+./submodules/fused-ssim

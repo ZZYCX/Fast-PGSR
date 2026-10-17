@@ -1,0 +1,12 @@
+{
+  "fast-pgsr-old": {
+    "pinned_requirements": 93,
+    "version_mismatches": []
+  },
+  "Fast-Sam2": {
+    "pinned_requirements": 132,
+    "version_mismatches": []
+  },
+  "source_paths": "all present",
+  "fresh_install_tested": false
+}

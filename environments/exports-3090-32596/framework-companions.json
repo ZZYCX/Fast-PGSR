@@ -1,0 +1,18 @@
+[
+  {
+    "file": "torchaudio-2.7.1+cu118-cp310-cp310-manylinux_2_28_x86_64.whl",
+    "sha256": "effef2c79a95830d11b481f6fbe461312988b49b4c0b3dbe893d0b56d5ce032f"
+  },
+  {
+    "file": "torchaudio-0.12.1+cu116-cp37-cp37m-linux_x86_64.whl",
+    "sha256": "f19ef695ace19d5d9906d9efa5d9b9647862c84ff01f012943d5336688bffe6c"
+  },
+  {
+    "file": "torchvision-0.22.1+cu118-cp310-cp310-manylinux_2_28_x86_64.whl",
+    "sha256": "64954400493caf614b5aebded9b5a63eda8753cea9f8a1e32752eb2adc6ed383"
+  },
+  {
+    "file": "torchvision-0.13.1+cu116-cp37-cp37m-linux_x86_64.whl",
+    "sha256": "dcf32f6d998493e76ec21a38bbb856b7402295cf7a67fb09ce5bde7e7e725756"
+  }
+]

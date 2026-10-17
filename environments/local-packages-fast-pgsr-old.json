@@ -1,0 +1,7 @@
+[
+  "diff-gaussian-rasterization-fastgs==0.0.0",
+  "diff-plane-rasterization==0.0.0",
+  "fused-ssim==0.0.0",
+  "pytorch3d==0.7.1",
+  "simple-knn==0.0.0"
+]

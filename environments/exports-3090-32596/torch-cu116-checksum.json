@@ -1,0 +1,7 @@
+{
+  "file": "/root/fast-pgsr-deployment/wheelhouse/torch-1.12.1+cu116-cp37-cp37m-linux_x86_64.whl",
+  "bytes": 1904833146,
+  "sha256": "fc9b4786ec54be67eaa8b0c7c9999e2f4ae2b89a1c18e41de1515a190440c691",
+  "md5": "6bbcb08a2b27632d99f87c2571b89e30",
+  "official_url": "https://download.pytorch.org/whl/cu116/torch-1.12.1%2Bcu116-cp37-cp37m-linux_x86_64.whl"
+}

@@ -1,0 +1,5 @@
+# Install AFTER requirements-Fast-Sam2.txt, from the project root:
+# python -m pip install --no-build-isolation --no-deps -r requirements-Fast-Sam2-source.txt
+# Rebuild local GroundingDINO / SAM2 extensions; no checkpoints are included.
+-e ./third_party/Grounded-SAM-2/grounding_dino
+-e ./third_party/Grounded-SAM-2

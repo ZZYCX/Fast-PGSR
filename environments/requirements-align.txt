@@ -1,0 +1,4 @@
+# Minimal ArUco environment; versions verified in Fast-Sam2 on the server.
+numpy==2.2.6
+opencv-python==5.0.0.93
+pycolmap==4.1.0

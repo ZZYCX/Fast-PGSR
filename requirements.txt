@@ -1,0 +1,10 @@
+# Canonical pipeline: run_batch_gpu1.sh
+# TWO SEPARATE Conda environments are required; do not install both lists together.
+# Default: fast-pgsr-old (Python 3.7.13, Torch 1.12.1+cu116).
+# python -m pip install -r requirements.txt
+# Then: python -m pip install --no-build-isolation --no-deps -r requirements-fast-pgsr-old-source.txt
+# Fast-Sam2 (Python 3.10.20, Torch 2.7.1+cu118):
+# python -m pip install -r requirements-Fast-Sam2.txt
+# Then: python -m pip install --no-build-isolation --no-deps -r requirements-Fast-Sam2-source.txt
+# Complete Conda creation and validation steps: MIGRATION_GPU1.md
+-r requirements-fast-pgsr-old.txt

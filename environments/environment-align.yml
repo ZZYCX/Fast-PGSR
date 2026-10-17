@@ -1,0 +1,11 @@
+name: FastGS
+channels:
+- conda-forge
+- defaults
+dependencies:
+- python=3.10.20
+- pip
+- pip:
+  - numpy==2.2.6
+  - opencv-python==5.0.0.93
+  - pycolmap==4.1.0

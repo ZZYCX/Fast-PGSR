@@ -1,0 +1,12 @@
+# Ignore everything
+build/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dylib
+*.ini
+
+*.mtl
+*.obj

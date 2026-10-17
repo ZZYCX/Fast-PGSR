@@ -1,0 +1,14 @@
+psutil
+python-dateutil 
+pandas
+fpsample
+matplotlib
+potpourri3d
+open3d
+trimesh
+plyfile
+e3nn
+glfw
+imgui
+PyOpenGL
+PyGLM
