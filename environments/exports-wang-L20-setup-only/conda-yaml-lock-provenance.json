@@ -1,0 +1,22 @@
+{
+  "fast-pgsr-old": {
+    "yaml_sha256": "7d02642e8e953d0ef6f8a5eb743a2ed559038d8d66f7573092426e82160b4f7b",
+    "original_explicit_sha256": "736ecede42d1e73298e93b291c1e7662e5bf4407d1e6aecc7e860ccd4f7e2380",
+    "all_yaml_package_pins_matched": true,
+    "resolved_additional_transitive_packages": {
+      "zstd": "1.5.7",
+      "liblzma": "5.8.2",
+      "liblzma-devel": "5.8.2",
+      "xz-gpl-tools": "5.8.2",
+      "xz-tools": "5.8.2"
+    }
+  },
+  "Fast-Sam2": {
+    "yaml_sha256": "76eebab46c7b221c0a55256a9ebc157124d63c422afd99c4d527edee1c2599eb",
+    "original_explicit_sha256": "3c1aa905a303a16abc0e223a0d20ae5b255e541fac83d1e5fbd7156cd1bf90b1",
+    "all_yaml_package_pins_matched": true,
+    "resolved_additional_transitive_packages": {
+      "tzdata": "2026c"
+    }
+  }
+}

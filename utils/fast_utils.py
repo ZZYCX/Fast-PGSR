@@ -25,7 +25,7 @@ def get_loss(reconstructed_image, original_image):
     return l1_loss_norm
 
 def compute_photometric_loss(viewpoint_cam, image):
-    gt_image = viewpoint_cam.original_image.cuda()
+    gt_image = viewpoint_cam.get_image()[0]
     Ll1 = l1_loss(image, gt_image)
     loss = (1.0 - 0.2) * Ll1 + 0.2 * (1.0 - fast_ssim(image.unsqueeze(0), gt_image.unsqueeze(0)))
     return loss
@@ -75,7 +75,7 @@ def compute_gaussian_score_fastgs(camlist, gaussians, pipe, bg, args, DENSIFY = 
         render_image = render_fastgs(my_viewpoint_cam, gaussians, pipe, bg, args.mult)["render"]
         photometric_loss = compute_photometric_loss(my_viewpoint_cam, render_image)
 
-        gt_image = my_viewpoint_cam.original_image.cuda()
+        gt_image = my_viewpoint_cam.get_image()[0]
         get_flag = True
         l1_loss_norm = get_loss(render_image, gt_image)
         

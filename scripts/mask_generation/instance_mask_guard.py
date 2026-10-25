@@ -2,6 +2,7 @@
 from pathlib import Path
 import importlib.util
 import hashlib
+import os
 import numpy as np
 import cv2
 from scipy.spatial import cKDTree
@@ -67,7 +68,8 @@ def build_support(scene, images, labels, init_idx):
     cube = (votes[:, 2] >= 3) & (votes[:, 2] >= .6 * total)
     plant = (votes[:, 1] >= 3) & (votes[:, 1] >= .55 * total)
     if cube.sum() < 10 or plant.sum() < 30:
-        raise RuntimeError('单株约束缺少跨视角植株/魔方支持，禁止保存未核验掩码')
+        raise RuntimeError('单株约束缺少跨视角植株/魔方支持，禁止保存未核验掩码 '
+                           f'(cube={int(cube.sum())}/10, plant={int(plant.sum())}/30)')
     scale = float(np.linalg.norm(np.percentile(xyz[cube], 90, axis=0) - np.percentile(xyz[cube], 10, axis=0)) / np.sqrt(3))
     if not np.isfinite(scale) or scale <= 0:
         raise RuntimeError('魔方尺度不合法')
@@ -98,7 +100,8 @@ def build_support(scene, images, labels, init_idx):
     counts = np.bincount(components[components >= 0])
     order = np.argsort(-counts, kind='stable'); main = int(order[0])
     if len(order) > 1 and counts[main] < 1.5 * counts[order[1]]:
-        raise RuntimeError('多个相近规模植株实例，请指定更清晰的初始化帧')
+        raise RuntimeError('多个相近规模植株实例，请指定更清晰的初始化帧 '
+                           f'(largest={int(counts[main])}, second={int(counts[order[1]])})')
     tree = cKDTree(xyz[pi[components == main]])
     accepted = components == main
     component_report = []
@@ -115,7 +118,8 @@ def build_support(scene, images, labels, init_idx):
     rows, xy = observations[init_idx]
     initial_plant = labels[init_idx][xy[:, 1], xy[:, 0]] == 1
     if int((target[rows] & initial_plant).sum()) < 10:
-        raise RuntimeError('三维主实例与初始化目标不一致')
+        raise RuntimeError('三维主实例与初始化目标不一致 '
+                           f'(shared_tracks={int((target[rows] & initial_plant).sum())}/10)')
     for index in observations:
         observations[index]=(*observations[index],cube_regions[index])
     return observations, target, neighbour, {'version': VERSION, 'implementation_sha256': IMPLEMENTATION_SHA256, 'cube_scale': scale,
@@ -125,6 +129,8 @@ def build_support(scene, images, labels, init_idx):
 
 def refine_training_masks(scene, images, frame_results, init_idx, predictor):
     observations, target, neighbour, report = build_support(scene, images, frame_results, init_idx)
+    recover_prompts = os.environ.get('MASK_PROMPT_RECOVERY', '0') == '1'
+    report['prompt_recovery'] = recover_prompts
     report['frames'] = []
     report['low_support_policy'] = 'retain_sam2_propagation'
     report['low_support_frames'] = []
@@ -194,6 +200,13 @@ def refine_training_masks(scene, images, frame_results, init_idx, predictor):
             wrong=neg[plant_mask[neg[:,1].astype(int),neg[:,0].astype(int)]] if len(neg) else neg
             wrong=wrong[(wrong[:,0]>=x1)&(wrong[:,0]<=x2)&(wrong[:,1]>=y1)&(wrong[:,1]<=y2)]
             coords=np.vstack((coords,wrong-offset));point_labels=np.r_[point_labels,np.zeros(len(wrong),np.int32)]
+            if recover_prompts:
+                # Correct both kinds of failed prompt, without changing the
+                # original positive/negative acceptance thresholds.
+                missed=positive[~plant_mask[positive[:,1].astype(int),positive[:,0].astype(int)]]
+                missed=sample_prompts(missed,24)
+                coords=np.vstack((coords,missed-offset))
+                point_labels=np.r_[point_labels,np.ones(len(missed),np.int32)]
         if positive_hit < .8 or negative_hit > .1:
             debug=cv2.cvtColor(rgb,cv2.COLOR_RGB2BGR)
             tint=debug.copy();tint[plant_mask]=(0,220,0);debug=cv2.addWeighted(debug,.65,tint,.35,0)

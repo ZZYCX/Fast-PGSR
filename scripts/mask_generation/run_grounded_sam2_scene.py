@@ -677,12 +677,17 @@ def main() -> int:
         )
         # 按 --fill-hole-area 覆盖补洞面积；设为 0 即关闭补洞，避免细结构周围鼓包。
         predictor.fill_hole_area = args.fill_hole_area
-    state = predictor.init_state(
-        video_path=str(frame_dir),
-        offload_video_to_cpu=True,
-        offload_state_to_cpu=args.offload_state_to_cpu,
-        async_loading_frames=False,
-    )
+    frame_cache = nullcontext()
+    if os.environ.get("SAM2_BOUNDED_FRAMES") == "1":
+        from scripts.preprocess.sam2_frame_cache import bounded_video_frames
+        frame_cache = bounded_video_frames()
+    with frame_cache:
+        state = predictor.init_state(
+            video_path=str(frame_dir),
+            offload_video_to_cpu=True,
+            offload_state_to_cpu=args.offload_state_to_cpu,
+            async_loading_frames=False,
+        )
     predictor.reset_state(state)
 
     frame_results: dict[int, np.ndarray] = {}

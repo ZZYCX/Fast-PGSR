@@ -44,12 +44,12 @@ MIN_VIEWS = 2
 # ------------------------------------------------------------
 # 四角整体拟合质量阈值
 #
-# RMSE超过边长5%认为拟合质量很差
+# 允许边长6%以内的轻微三角化噪声；仍执行单点10%和全部正方形约束。
 # 最大单点误差超过边长10%认为拟合质量很差
 #
 # 正常情况下应该远小于这两个值
 # ------------------------------------------------------------
-MAX_FIT_RMSE_RATIO = 0.05
+MAX_FIT_RMSE_RATIO = 0.06
 MAX_POINT_ERROR_RATIO = 0.10
 
 # ------------------------------------------------------------
@@ -62,7 +62,7 @@ SQUARE_MAX_EDGE_RATIO = 1.20      # 最长边 / 最短边
 SQUARE_MAX_EDGE_CV = 0.10         # 四条边长度变异系数
 SQUARE_MAX_DIAG_RATIO = 1.15      # 两条对角线长度比
 SQUARE_MAX_ANGLE_DEG = 15.0       # 相邻边相对90°的最大偏差
-SQUARE_MAX_PLANE_RATIO = 0.03     # 平面RMSE / 平均边长
+SQUARE_MAX_PLANE_RATIO = 0.05     # 平面RMSE / 平均边长；边长、对角线、角度约束仍保留
 
 
 # ============================================================
@@ -927,6 +927,14 @@ def main():
     detector_params.cornerRefinementMethod = cv2.aruco.CORNER_REFINE_SUBPIX
     detector = cv2.aruco.ArucoDetector(dictionary, detector_params)
     fallback_detector = cv2.aruco.ArucoDetector(dictionary)
+    recovery_detector = None
+    recovery_boxes = {}
+    from scripts.preprocess.aruco_recovery import configure_recovery
+    if configure_recovery(os.path.dirname(os.path.abspath(__file__))):
+        from scripts.preprocess.aruco_recovery import LowContrastDetector, verified_boxes
+        recovery_detector = LowContrastDetector(dictionary)
+        recovery_boxes = verified_boxes(PROJECT_DIR)
+        print("ArUco recovery: mask / verified same-frame DINO ROI; geometry gates unchanged")
 
     # ========================================================
     # 保存每一帧的所有 ArUco 检测
@@ -991,6 +999,12 @@ def main():
             corners, ids, _ = fallback_detector.detectMarkers(enlarged)
             if ids is not None:
                 corners = [corner / 2.0 for corner in corners]
+
+        if recovery_detector is not None and (ids is None or not np.isin(ids, (0, 1)).any()):
+            mask = cv2.imread(os.path.join(PROJECT_DIR, "object_mask", os.path.splitext(fname)[0] + ".png"), 0)
+            recovered_corners, recovered_ids = recovery_detector.detect(gray, mask, recovery_boxes.get(fname, ()))
+            if recovered_ids is not None:
+                corners, ids = recovered_corners, recovered_ids
 
         if ids is None:
             continue

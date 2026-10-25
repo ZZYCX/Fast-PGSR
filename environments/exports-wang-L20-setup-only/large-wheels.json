@@ -1,0 +1,164 @@
+[
+  {
+    "filename": "nvidia_cublas_cu11-11.11.3.6-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/ea/2e/9d99c60771d275ecf6c914a612e9a577f740a615bc826bec132368e1d3ae/nvidia_cublas_cu11-11.11.3.6-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "60252822adea5d0b10cd990a7dc7bedf7435f30ae40083c7a624a85a43225abc",
+    "bytes": 417870460
+  },
+  {
+    "filename": "nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/af/eb/ff4b8c503fa1f1796679dce648854d58751982426e4e4b37d6fce49d259c/nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "08ed2686e9875d01b58e3cb379c6896df8e76c75e0d4a7f7dace3d7b6d9ef8eb",
+    "bytes": 393138322
+  },
+  {
+    "filename": "nvidia_cuda_cupti_cu11-11.8.87-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/74/42/9f5c5cc084ce6f3073048c4f6806f45ba4c8c73f227c9587215d9c372e05/nvidia_cuda_cupti_cu11-11.8.87-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "4191a17913a706b5098681280cd089cd7d8d3df209a6f5cb79384974a96d24f2",
+    "bytes": 13093662
+  },
+  {
+    "filename": "nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/49/60/7b6497946d74bcf1de852a21824d63baad12cd417db4195fc1bfe59db953/nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "6768bad6cab4f19e8292125e5f1ac8aa7d1718704012a0e3272a6f61c4bce132",
+    "bytes": 8917980
+  },
+  {
+    "filename": "nvidia_cuda_nvrtc_cu11-11.8.89-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/60/44/202e027c224c26e15a53f01c5c7604c7f6b4fd368882d3164ea08fead207/nvidia_cuda_nvrtc_cu11-11.8.89-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "a8d02f3cba345be56b1ffc3e74d8f61f02bb758dd31b0f20e12277a5a244f756",
+    "bytes": 23173745
+  },
+  {
+    "filename": "nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/75/2e/46030320b5a80661e88039f59060d1790298b4718944a65a7f2aeda3d9e9/nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "35b0cc6ee3a9636d5409133e79273ce1f3fd087abb0532d2d2e8fff1fe9efc53",
+    "bytes": 23650380
+  },
+  {
+    "filename": "nvidia_cuda_runtime_cu11-11.8.89-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/a6/ec/a540f28b31de7bc1ed49eecc72035d4cb77db88ead1d42f7bfa5ae407ac6/nvidia_cuda_runtime_cu11-11.8.89-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "92d04069a987e1fbc9213f8376d265df0f7bb42617d44f5eda1f496acea7f2d1",
+    "bytes": 875592
+  },
+  {
+    "filename": "nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/e1/23/e717c5ac26d26cf39a27fbc076240fad2e3b817e5889d671b67f4f9f49c5/nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "ba3b56a4f896141e25e19ab287cd71e52a6a0f4b29d0d31609f60e3b4d5219b7",
+    "bytes": 897690
+  },
+  {
+    "filename": "nvidia_cudnn_cu11-9.1.0.70-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/00/3b/0b776f04e364cd99e4cf152c2a9eadb5934c67c9a91429da55169a9447fd/nvidia_cudnn_cu11-9.1.0.70-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "e6135ac63fe9d5b0b89cfb35c3fc1c1349f2b995becadf2e9dc21bca89d9633d",
+    "bytes": 663919573
+  },
+  {
+    "filename": "nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/2a/78/4535c9c7f859a64781e43c969a3a7e84c54634e319a996d43ef32ce46f83/nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl",
+    "sha256": "30ac3869f6db17d170e0e556dd6cc5eee02647abc31ca856634d5a40f82c15b2",
+    "bytes": 570988386
+  },
+  {
+    "filename": "nvidia_cufft_cu11-10.9.0.58-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/64/c8/133717b43182ba063803e983e7680a94826a9f4ff5734af0ca315803f1b3/nvidia_cufft_cu11-10.9.0.58-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "e21037259995243cc370dd63c430d77ae9280bedb68d5b5a18226bfc92e5d748",
+    "bytes": 168405419
+  },
+  {
+    "filename": "nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/8f/16/73727675941ab8e6ffd86ca3a4b7b47065edcca7a997920b831f8147c99d/nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "ccba62eb9cef5559abd5e0d54ceed2d9934030f51163df018532142a8ec533e5",
+    "bytes": 200221632
+  },
+  {
+    "filename": "nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/b2/66/cc9876340ac68ae71b15c743ddb13f8b30d5244af344ec8322b449e35426/nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "cc23469d1c7e52ce6c1d55253273d32c565dd22068647f3aa59b3c6b005bf159",
+    "bytes": 1142103
+  },
+  {
+    "filename": "nvidia_curand_cu11-10.3.0.86-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/58/e5/ce5806afc48a6e4e0dddd25316ac60b6fa94fd1791bdbf4ca17bf52696ea/nvidia_curand_cu11-10.3.0.86-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "cd4cffbf78bb06580206b4814d5dc696d1161c902aae37b2bba00056832379e6",
+    "bytes": 58124497
+  },
+  {
+    "filename": "nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/73/1b/44a01c4e70933637c93e6e1a8063d1e998b50213a6b65ac5a9169c47e98e/nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "a42cd1344297f70b9e39a1e4f467a4e1c10f1da54ff7a85c12197f6c652c8bdf",
+    "bytes": 56279010
+  },
+  {
+    "filename": "nvidia_cusolver_cu11-11.4.1.48-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/52/fe/866e87e6e6a1b0a5fcf8524a058042656702f2057e22bfdb8899a7c38e10/nvidia_cusolver_cu11-11.4.1.48-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "ea9fb1ad8c644ca9ed55af13cc39af3b7ba4c3eb5aef18471fe1fe77d94383cb",
+    "bytes": 128246438
+  },
+  {
+    "filename": "nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/f0/6e/c2cf12c9ff8b872e92b4a5740701e51ff17689c4d726fca91875b07f655d/nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "e9e49843a7707e42022babb9bcfa33c29857a93b88020c4e4434656a655b698c",
+    "bytes": 158229790
+  },
+  {
+    "filename": "nvidia_cusparse_cu11-11.7.5.86-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/ed/5c/b0333b07c51ced77397c2fb0d9826072cea0da9d421aa7e792aa0f8ecc72/nvidia_cusparse_cu11-11.7.5.86-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "8d7cf1628fd8d462b5d2ba6678fae34733a48ecb80495b9c68672ec6a6dde5ef",
+    "bytes": 204126227
+  },
+  {
+    "filename": "nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/06/1e/b8b7c2f4099a37b96af5c9bb158632ea9e5d9d27d7391d7eb8fc45236674/nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "7556d9eca156e18184b94947ade0fba5bb47d69cec46bf8660fd2c71a4b48b73",
+    "bytes": 216561367
+  },
+  {
+    "filename": "nvidia_cusparselt_cu12-0.6.3-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/3b/9a/72ef35b399b0e183bc2e8f6f558036922d453c4d8237dab26c666a04244b/nvidia_cusparselt_cu12-0.6.3-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "e5c8a26c36445dd2e6812f1177978a24e2d37cacce7e090f297a688d1ec44f46",
+    "bytes": 156785796
+  },
+  {
+    "filename": "nvidia_nccl_cu11-2.21.5-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/ac/9a/8b6a28b3b87d5fddab0e92cd835339eb8fbddaa71ae67518c8c1b3d05bae/nvidia_nccl_cu11-2.21.5-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "49d8350629c7888701d1fd200934942671cb5c728f49acc5a0b3a768820bed29",
+    "bytes": 147811630
+  },
+  {
+    "filename": "nvidia_nccl_cu12-2.26.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/67/ca/f42388aed0fddd64ade7493dbba36e1f534d4e6fdbdd355c6a90030ae028/nvidia_nccl_cu12-2.26.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "694cf3879a206553cc9d7dbda76b13efaf610fdb70a50cba303de1b0d1530ac6",
+    "bytes": 201319755
+  },
+  {
+    "filename": "nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/9d/d7/c5383e47c7e9bf1c99d5bd2a8c935af2b6d705ad831a7ec5c97db4d82f4f/nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl",
+    "sha256": "eedc36df9e88b682efe4309aa16b5b4e78c2407eac59e8c10a6a47535164369a",
+    "bytes": 19744971
+  },
+  {
+    "filename": "nvidia_nvtx_cu11-11.8.86-py3-none-manylinux2014_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/b5/ad/973a187b137a3d45dc3faac421ef1275fb41fc169fd3889e2d5ceb0daa54/nvidia_nvtx_cu11-11.8.86-py3-none-manylinux2014_x86_64.whl",
+    "sha256": "979f5b2aef5da164c5c53c64c85c3dfa61b8b4704f4f963bb568bf98fa8472e8",
+    "bytes": 99130
+  },
+  {
+    "filename": "nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/56/9a/fff8376f8e3d084cd1530e1ef7b879bb7d6d265620c95c1b322725c694f4/nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+    "sha256": "b90bed3df379fa79afbd21be8e04a0314336b8ae16768b58f2d34cb1d04cd7d2",
+    "bytes": 89276
+  },
+  {
+    "filename": "open3d-0.19.0-cp310-cp310-manylinux_2_31_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/c7/45/13bc9414ee9db611cba90b9efa69f66f246560e8ade575f1ee5b7f7b5d31/open3d-0.19.0-cp310-cp310-manylinux_2_31_x86_64.whl",
+    "sha256": "5b60234fa6a56a20caf1560cad4e914133c8c198d74d7b839631c90e8592762e",
+    "bytes": 447678387
+  },
+  {
+    "filename": "triton-3.3.1-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+    "url": "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/packages/8d/a9/549e51e9b1b2c9b854fd761a1d23df0ba2fbc60bd0c13b489ffa518cfcb7/triton-3.3.1-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+    "sha256": "b74db445b1c562844d3cfad6e9679c72e93fdfb1a90a24052b03bb5c49d1242e",
+    "bytes": 155600257
+  }
+]

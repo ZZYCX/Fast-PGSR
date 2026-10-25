@@ -1,0 +1,126 @@
+{
+  "apt_packages": [
+    {
+      "package": "ffmpeg",
+      "status": "install ok installed"
+    },
+    {
+      "package": "build-essential",
+      "status": "install ok installed"
+    },
+    {
+      "package": "cmake",
+      "status": "install ok installed"
+    },
+    {
+      "package": "ninja-build",
+      "status": "install ok installed"
+    },
+    {
+      "package": "pkg-config",
+      "status": "install ok installed"
+    },
+    {
+      "package": "wget",
+      "status": "install ok installed"
+    },
+    {
+      "package": "curl",
+      "status": "install ok installed"
+    },
+    {
+      "package": "ca-certificates",
+      "status": "install ok installed"
+    },
+    {
+      "package": "git",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libgl1",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libglib2.0-0",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libeigen3-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libboost-program-options-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libboost-filesystem-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libboost-graph-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libboost-system-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libboost-test-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libflann-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libfreeimage-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libmetis-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libgoogle-glog-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libgtest-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libsqlite3-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libglew-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "qtbase5-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libqt5opengl5-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libcgal-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libceres-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libgmp-dev",
+      "status": "install ok installed"
+    },
+    {
+      "package": "libmpfr-dev",
+      "status": "install ok installed"
+    }
+  ],
+  "miniconda_installation": "cached installer bootstrap exit 0",
+  "note": "Stopped redundant installer download after cached bootstrap had installed base; no apt or dpkg stage interrupted"
+}

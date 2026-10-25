@@ -8,6 +8,7 @@
 /logs/
 /reconstruction-results/
 /train_summary.txt
+/.receiver-supervisor/
 
 # Python and native build outputs. Keep setup.py, CMakeLists.txt and C/CUDA headers.
 __pycache__/
@@ -83,6 +84,15 @@ CMakeFiles/
 /environments/exports-3090-32624-setup-only/source-manifest*.json
 /environments/exports-3090-32624-setup-only/framework-downloads-installed.json
 /environments/exports-3090-32624-setup-only/installed-downloads.json
+
+# Installation caches and per-transfer audit output from later deployments.
+/environments/exports-*-setup-only/colmap-CMakeCache.txt
+/environments/exports-*-setup-only/cache-transfer-installed.json
+/environments/exports-*-setup-only/final-source-archive.json
+/environments/exports-*-setup-only/installation-result.json
+/environments/exports-*-setup-only/migration-scope-final.json
+/environments/exports-*-setup-only/source-cache-transfer-manifest.json
+/environments/exports-*-setup-only/source-manifest*.json
 
 # Local environment secrets and editor files.
 .env

@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 import shutil
 import subprocess
+import sqlite3
 
 
 def prepare_scene(scene, args):
@@ -15,13 +16,15 @@ def prepare_scene(scene, args):
     generated = [scene / name for name in (
         "images", "sparse", "stereo", "distorted", "images_2", "images_4", "images_8",
         "database.db", "database.db-journal", "database.db-wal", "database.db-shm")]
-    if not args.overwrite and any(p.exists() or p.is_symlink() for p in generated):
+    resume_mapper = getattr(args, 'resume_mapper', False)
+    protected = [p for p in generated if not (resume_mapper and p.name == 'database.db')]
+    if not args.overwrite and any(p.exists() or p.is_symlink() for p in protected):
         raise FileExistsError("COLMAP outputs already exist; use --overwrite or a new scene")
     # All deletion targets are literal children of this scene. Never follow aliases.
-    for path in generated:
+    for path in protected:
         if path.is_symlink():
             raise ValueError("Refusing symlink output: {}".format(path))
-    for path in generated:
+    for path in protected:
         if path.is_dir():
             shutil.rmtree(str(path))
         elif path.exists():
@@ -31,12 +34,25 @@ def prepare_scene(scene, args):
     database = str(scene / "database.db")
     use_gpu = "0" if args.no_gpu else "1"
     def run(command, *options):
-        subprocess.run([executable, command] + list(options), check=True)
-    run("feature_extractor", "--database_path", database, "--image_path", str(frames),
-        "--ImageReader.single_camera", "1", "--ImageReader.camera_model", args.camera,
-        "--SiftExtraction.use_gpu", use_gpu, "--SiftExtraction.gpu_index", str(args.gpu_index))
-    run("exhaustive_matcher", "--database_path", database,
-        "--SiftMatching.use_gpu", use_gpu, "--SiftMatching.gpu_index", str(args.gpu_index))
+        argv = [args.mapper_executable] if command == 'mapper' and getattr(args, 'mapper_executable', '') else [executable, command]
+        subprocess.run(argv + list(options), check=True)
+    if not resume_mapper:
+        run("feature_extractor", "--database_path", database, "--image_path", str(frames),
+            "--ImageReader.single_camera", "1", "--ImageReader.camera_model", args.camera,
+            "--SiftExtraction.use_gpu", use_gpu, "--SiftExtraction.gpu_index", str(args.gpu_index))
+    with sqlite3.connect(database) as connection:
+        feature_images, features = connection.execute(
+            'SELECT COUNT(*), COALESCE(SUM(rows), 0) FROM descriptors').fetchone()
+    if not feature_images or not features:
+        raise RuntimeError('COLMAP extracted no image descriptors. Check image decoding/bit depth before matching; the database is empty.')
+    if not resume_mapper:
+        run("exhaustive_matcher", "--database_path", database,
+            "--SiftMatching.use_gpu", use_gpu, "--SiftMatching.gpu_index", str(args.gpu_index))
+    else:
+        with sqlite3.connect(database) as connection:
+            count = connection.execute('SELECT COUNT(*) FROM two_view_geometries WHERE rows>=15').fetchone()[0]
+        if not count:
+            raise RuntimeError('Mapper resume requires existing geometrically verified matches')
     run("mapper", "--database_path", database, "--image_path", str(frames),
         "--output_path", str(scene / "sparse"), "--Mapper.ba_global_function_tolerance", "0.000001")
     for path in (scene / "sparse/0").iterdir():
@@ -82,6 +98,8 @@ if __name__ == "__main__":
     parser.add_argument("--gpu_index", type=int, default=0)
     parser.add_argument("--camera", default="OPENCV")
     parser.add_argument("--colmap_executable", default="")
+    parser.add_argument("--mapper_executable", default="")
+    parser.add_argument("--resume_mapper", action="store_true")
     parser.add_argument("--resize", action="store_true")
     parser.add_argument("--magick_executable", default="")
     parser.add_argument("--overwrite", action="store_true")

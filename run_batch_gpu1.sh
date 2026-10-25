@@ -21,6 +21,10 @@ FPS_TARGET="${FPS_TARGET:-2.5}"
 COLMAP_USE_GPU="${COLMAP_USE_GPU:-1}"
 EXTRACT_USE_GPU="${EXTRACT_USE_GPU:-1}"
 TRAIN_DATA_DEVICE="${TRAIN_DATA_DEVICE:-cuda}"
+TRAIN_PRELOAD_IMG="${TRAIN_PRELOAD_IMG:-1}"
+ALIGN_TIMEOUT_SECONDS="${ALIGN_TIMEOUT_SECONDS:-0}"
+SCENE_TIMEOUT_SECONDS="${SCENE_TIMEOUT_SECONDS:-5400}"
+RENDER_MAX_DEPTH="${RENDER_MAX_DEPTH:-32.0}"
 RENDER_VOXEL_SIZE="${RENDER_VOXEL_SIZE:-0.01}"
 TARGET_SPATIAL_RADIUS="${TARGET_SPATIAL_RADIUS:-0.8}"
 SCENE="${SCENE:-}"
@@ -36,9 +40,13 @@ RUN_EXPORT="${RUN_EXPORT:-1}"
 [[ "$RUBIK_COUNT" == 1 || "$RUBIK_COUNT" == 2 ]] || { echo "RUBIK_COUNT 必须为 1/2" >&2; exit 1; }
 [[ "$FORCE" == 0 || "$FORCE" == 1 ]] || { echo "FORCE 必须为 0/1" >&2; exit 1; }
 [[ "$ITERATIONS" =~ ^[1-9][0-9]*$ && "$PLANT_INDEX" =~ ^[0-9]+$ ]] || exit 1
+[[ "$ALIGN_TIMEOUT_SECONDS" =~ ^[0-9]+$ ]] || exit 1
+[[ "$SCENE_TIMEOUT_SECONDS" =~ ^[1-9][0-9]*$ ]] || exit 1
+[[ "$FPS_TARGET" =~ ^[0-9]+([.][0-9]+)?$ && "$FPS_TARGET" != 0 ]] || exit 1
+[[ "$RENDER_MAX_DEPTH" =~ ^[1-9][0-9]*([.][0-9]+)?$ ]] || exit 1
 [[ "$EXPORT_MODE" == strict || "$EXPORT_MODE" == both || "$EXPORT_MODE" == conservative ]] || exit 1
 [[ -z "$SCENE" || ( "$SCENE" != *'/'* && "$SCENE" != *'\\'* && "$SCENE" != . && "$SCENE" != .. ) ]] || exit 1
-for enabled in "$COLMAP_USE_GPU" "$EXTRACT_USE_GPU" "$RUN_EXTRACT" "$RUN_COLMAP" "$RUN_MASK" "$RUN_ALIGN" "$RUN_LABEL" "$RUN_TRAIN" "$RUN_RENDER" "$RUN_EXPORT"; do
+for enabled in "$COLMAP_USE_GPU" "$EXTRACT_USE_GPU" "$TRAIN_PRELOAD_IMG" "$RUN_EXTRACT" "$RUN_COLMAP" "$RUN_MASK" "$RUN_ALIGN" "$RUN_LABEL" "$RUN_TRAIN" "$RUN_RENDER" "$RUN_EXPORT"; do
     [[ "$enabled" == 0 || "$enabled" == 1 ]] || exit 1
 done
 cd "$project_root" || exit 1
@@ -58,7 +66,11 @@ printf 'Project: %s\nVideos: %s\nData: %s\nOutput: %s\nGPU visible: %s\nRubik co
     "$project_root" "$video_dir" "$data_root" "$output_root" "$CUDA_VISIBLE_DEVICES" "$RUBIK_COUNT" "$EXPORT_MODE"
 declare -A failed=()
 failures=0
-run_python() { local env_name="$1"; shift; conda run --no-capture-output -n "$env_name" python "$@"; }
+run_python() {
+    local env_name="$1" remaining=$((scene_deadline - SECONDS)); shift
+    (( remaining > 0 )) || return 124
+    timeout --kill-after=10s "${remaining}s" conda run --no-capture-output -n "$env_name" python "$@" </dev/null
+}
 validate() { local env_name="$1" stage="$2"; shift 2; run_python "$env_name" "$project_root/scripts/validate_semantic_inputs.py" "$stage" --scene "$scene_dir" --rubik-count "$RUBIK_COUNT" "$@"; }
 model_ready() { local f; for f in cameras.bin images.bin points3D.bin; do [[ -s "$1/$f" ]] || return 1; done; }
 # Only delete a verified scene descendant when FORCE was explicitly enabled.
@@ -78,7 +90,7 @@ extract_scene() {
     local video="$1"
     [[ ! -L "$scene_dir" ]] || { echo "拒绝符号链接场景" >&2; return 1; }
     if [[ -d "$scene_dir/input" ]]; then
-        if [[ "$FORCE" == 0 ]] && find "$scene_dir/input" -maxdepth 1 -name '*.jpg' -print -quit | grep -q .; then
+        if [[ "$FORCE" == 0 ]] && find "$scene_dir/input" -maxdepth 1 \( -name '*.jpg' -o -name '*.png' \) -print -quit | grep -q .; then
             echo "复用已有抽帧"; return 0
         fi
         remove_owned "$scene_dir/input" || return 1
@@ -87,7 +99,7 @@ extract_scene() {
     run_python "$colmap_env" "$project_root/scripts/preprocess/extract_frames.py" \
         --video "$video" --output_dir "$scene_dir/input" --fps "$FPS_TARGET" --gpu_index 0 \
         $( [[ "$EXTRACT_USE_GPU" == 0 ]] && printf '%s' '--no_gpu' ) || return 1
-    find "$scene_dir/input" -maxdepth 1 -name '*.jpg' -print -quit | grep -q .
+    find "$scene_dir/input" -maxdepth 1 \( -name '*.jpg' -o -name '*.png' \) -print -quit | grep -q .
 }
 
 process_stage() {
@@ -99,6 +111,8 @@ process_stage() {
             fi
             run_python "$colmap_env" "$project_root/scripts/preprocess/convert.py" \
                 --scene_path "$scene_dir" --camera OPENCV --gpu_index 0 \
+                --mapper_executable "${COLMAP_MAPPER_EXECUTABLE:-}" \
+                $( [[ "${COLMAP_RESUME_MAPPER:-0}" == 1 ]] && printf '%s' '--resume_mapper' ) \
                 $( [[ "$COLMAP_USE_GPU" == 0 ]] && printf '%s' '--no_gpu' ) $( [[ "$FORCE" == 1 ]] && printf '%s' '--overwrite' ) || return 1
             model_ready "$scene_dir/sparse"
             ;;
@@ -124,7 +138,15 @@ process_stage() {
                 fi
                 remove_owned "$scene_dir/sparse/aligned" || return 1
             fi
-            run_python "$aruco_env" "$project_root/align_aruco_refine.py" "$scene_dir" || return 1
+            if (( ALIGN_TIMEOUT_SECONDS > 0 )); then
+                local align_limit=$((scene_deadline - SECONDS))
+                (( align_limit > 0 )) || return 124
+                (( align_limit <= ALIGN_TIMEOUT_SECONDS )) || align_limit=$ALIGN_TIMEOUT_SECONDS
+                timeout --kill-after=5s "${align_limit}s" conda run --no-capture-output \
+                    -n "$aruco_env" python "$project_root/align_aruco_refine.py" "$scene_dir" </dev/null || return 1
+            else
+                run_python "$aruco_env" "$project_root/align_aruco_refine.py" "$scene_dir" || return 1
+            fi
             model_ready "$scene_dir/sparse/aligned" || return 1
             printf '%s\n' "$stamp" > "$scene_dir/sparse/aligned/input.sha256"
             ;;
@@ -167,6 +189,7 @@ process_stage() {
             fi
             run_python "$train_env" "$project_root/train.py" -s "$scene_dir" -m "$output_path" \
                 --iterations "$ITERATIONS" --resolution 1 --data_device "$TRAIN_DATA_DEVICE" --ncc_scale 0.5 \
+                $( [[ "$TRAIN_PRELOAD_IMG" == 0 ]] && printf '%s' '--disable_preload_img' ) \
                 --densification_interval 500 --opacity_cull_threshold 0.05 --exposure_compensation \
                 --semantic_pipeline || return 1
             validate "$train_env" bind-trained --model "$output_path" --iteration "$ITERATIONS"
@@ -176,7 +199,7 @@ process_stage() {
             # Render the same cleaned target as the final export, never the full scene.
             if [[ -d "$output_path/mesh" ]]; then remove_owned "$output_path/mesh" || return 1; fi
             run_python "$train_env" "$project_root/render.py" -m "$output_path" \
-                --iteration "$ITERATIONS" --max_depth 15.0 --voxel_size "$RENDER_VOXEL_SIZE" \
+                --iteration "$ITERATIONS" --max_depth "$RENDER_MAX_DEPTH" --voxel_size "$RENDER_VOXEL_SIZE" \
                 --target_ply "$output_path/target_exports/strict/point_cloud.ply"
             ;;
         Export)
@@ -216,8 +239,15 @@ done
 selected=0
 for scene_name in "${scene_names[@]}"; do
     scene_dir="$data_root/$scene_name"
+    scene_deadline=$((SECONDS + SCENE_TIMEOUT_SECONDS))
     selected=$((selected+1))
     [[ ! -L "$scene_dir" ]] || { failed["$scene_name"]=1; failures=$((failures+1)); continue; }
+    # Completed products must never lose their receipt merely by rerunning a batch.
+    if [[ "$FORCE" == 0 && -f "$output_root/$scene_name/.reconstruction_complete.json" ]]; then
+        echo "已有完整结果清单，保留并跳过: $scene_name"; continue
+    fi
+    # Invalidate the previous receipt before any stage can change this plant.
+    rm -f -- "$output_root/$scene_name/.reconstruction_complete.json" || exit 1
     # All stages of this plant finish before touching the next video's frames.
     for stage in Extract Colmap Mask Align Label Train Export Render; do
         case "$stage" in
@@ -238,6 +268,17 @@ for scene_name in "${scene_names[@]}"; do
         mv "$batch_log_root/.$stage-$scene_name.log" "$batch_log_root/${stage}_$result/$scene_name.log"
         [[ "$ret" == 0 ]] || { echo "跳过失败场景的后续阶段: $scene_name"; break; }
     done
+    # Publish only after training, export and rendering all succeeded.
+    if [[ -z "${failed[$scene_name]:-}" && "$RUN_TRAIN$RUN_EXPORT$RUN_RENDER" == 111 ]]; then
+        if ! run_python "$train_env" "$project_root/scripts/publish_result_manifest.py" \
+            --scene-output "$output_root/$scene_name" --iteration "$ITERATIONS" \
+            > "$batch_log_root/ResultManifest-$scene_name.log" 2>&1; then
+            failed["$scene_name"]=1; failures=$((failures+1))
+            echo "结果完整性清单生成失败: $scene_name；详见 $batch_log_root/ResultManifest-$scene_name.log" >&2
+        else
+            echo "结果已就绪，等待本机接收: $output_root/$scene_name"
+        fi
+    fi
 done
 [[ -z "$SCENE" || "$selected" != 0 ]] || { echo "指定场景没有执行: $SCENE" >&2; exit 1; }
 echo "完成；失败阶段数=$failures；日志=$batch_log_root"

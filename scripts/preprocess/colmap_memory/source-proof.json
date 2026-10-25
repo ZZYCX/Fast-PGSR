@@ -1,0 +1,10 @@
+{
+  "url": "https://raw.githubusercontent.com/colmap/colmap/3.9.1/src/colmap/scene/database_cache.cc",
+  "version": "3.9.1",
+  "original_sha256": "3d3e74ad203b51570a79712bc43c00bfad72ad842cf9227325d3064ce6acd899",
+  "patched_sha256": "4c9d67c198e910f1b79227aa9201bed6d1974bc93f9fe9c270d3db49f7814cd9",
+  "change": "Release consumed per-pair inlier vectors, then their entire reserved geometry/ID arrays before Finalize; all graph edges, ordering, thresholds and solvers unchanged; periodically return already-freed allocator pages while flattening, without changing graph data",
+  "graph_source_url": "https://raw.githubusercontent.com/colmap/colmap/3.9.1/src/colmap/scene/correspondence_graph.cc",
+  "graph_original_sha256": "77bf37bf249e30693cd310b3094ad49787c0ccf6f777b862ea13da1697283dce",
+  "graph_patched_sha256": "bf49739a78a0c0d589ea4ecc05321474f99920ce1c0fd9db6ce8f1a129528826"
+}

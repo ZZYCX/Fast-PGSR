@@ -1,0 +1,8 @@
+{
+  "servers": [
+    {"name": "XC-3090", "host": "172.26.14.81", "port": 31908, "local_output_dir": "E:\\大豆植株三维重建结果\\单株重建结果\\9.18\\XC-3090"},
+    {"name": "XC-L20", "host": "172.26.14.45", "port": 31422, "password_env": "FAST_PGSR_SSH_PASSWORD_XC_L20", "local_output_dir": "E:\\大豆植株三维重建结果\\单株重建结果\\9.18\\XC-L20"},
+    {"name": "WD-3090", "host": "172.26.14.81", "port": 32624, "local_output_dir": "E:\\大豆植株三维重建结果\\单株重建结果\\9.18\\WD-3090"},
+    {"name": "WD-L20", "host": "172.26.14.45", "port": 30452, "local_output_dir": "E:\\大豆植株三维重建结果\\单株重建结果\\9.18\\WD-L20"}
+  ]
+}

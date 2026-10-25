@@ -1,0 +1,6 @@
+{
+  "file": "/root/.conda/envs/fast-pgsr-old/lib/python3.7/site-packages/torch/utils/cpp_extension.py",
+  "change": "temporarily allow 8.9 in build helper; nvcc 11.8 generates native sm_89; restore after build",
+  "before_sha256": "568759b0853612a60b069ca141155a037ea23b49b48dce1ab814e2772c353a6a",
+  "during_sha256": "e2920baef4cb6ac1fc4fe4e0220848297b2c8bda615cd4e8d92f7b62c9aca7a8"
+}
