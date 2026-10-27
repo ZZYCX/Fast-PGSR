@@ -1,0 +1,4 @@
+# Bash entry points must remain executable on Linux after a Windows checkout.
+run_batch_gpu1.sh text eol=lf
+activate_setup_only.sh text eol=lf
+scripts/test_single_rubik_pipeline.py text eol=lf

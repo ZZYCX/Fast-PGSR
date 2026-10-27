@@ -39,7 +39,7 @@ def functions(path, extra):
     tree = ast.parse(path.read_text(encoding='utf-8'))
     defs = [ast.ImportFrom(module='__future__', names=[ast.alias(name='annotations')], level=0)]
     defs += [n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
-    namespace = dict(np=np, cv2=cv2, Path=Path, json=json, hashlib=hashlib, argparse=argparse,
+    namespace = dict(os=os, np=np, cv2=cv2, Path=Path, json=json, hashlib=hashlib, argparse=argparse,
                      math=math, re=re, sys=sys, gc=gc, csv=csv, io=io, shutil=shutil,
                      subprocess=subprocess, nullcontext=nullcontext, redirect_stdout=redirect_stdout)
     namespace.update(extra)
@@ -117,7 +117,7 @@ class Regression(unittest.TestCase):
                          nms_preserve_order=lambda detections,threshold: detections)
         self.auto['box_iou'] = lambda a,b: np.zeros((len(a),len(b)))
         self.auto['load_base'] = lambda: types.SimpleNamespace(**self.base)
-    def tearDown(self): self.tmp.cleanup()
+    def tearDown(self): gc.collect(); self.tmp.cleanup()
     @staticmethod
     def det(key, box): return dict(label_key=key,label=key,score=.9,box=np.array(box,dtype=np.float32),order=0)
 
@@ -245,6 +245,15 @@ class Regression(unittest.TestCase):
         calls=[]
         def run(argv,check):
             calls.append(argv)
+            if argv[1]=='feature_extractor':
+                import sqlite3
+                connection=sqlite3.connect(str(scene/'database.db'))
+                try:
+                    connection.execute('CREATE TABLE descriptors(rows INTEGER)')
+                    connection.execute('INSERT INTO descriptors VALUES(16)')
+                    connection.commit()
+                finally:
+                    connection.close()
             if argv[1]=='mapper':
                 (scene/'sparse/0').mkdir()
                 for f in ('cameras.bin','images.bin','points3D.bin'): (scene/'sparse/0'/f).write_bytes(b'model')
@@ -255,109 +264,8 @@ class Regression(unittest.TestCase):
         with self.assertRaises(FileExistsError): converter.prepare_scene(scene,args)
 
 
-class BatchRegression(unittest.TestCase):
-    def run_batch(self, fail_mask=False, existing_output=False, label_fixture=False, multi_scene=False, videos=False):
-        bash = os.environ.get('BASH_TEST_EXECUTABLE') or shutil.which('bash')
-        if not bash:
-            self.skipTest('Bash not available')
-        with tempfile.TemporaryDirectory() as tmp:
-            folder=Path(tmp);bin_dir=folder/'bin';bin_dir.mkdir()
-            data=folder/'data';(data/'soybean').mkdir(parents=True)
-            if multi_scene:
-                (data/'soybean2').mkdir(parents=True)
-            video_dir=folder/'videos';video_dir.mkdir()
-            if videos:
-                (video_dir/'soybean.mp4').touch();(video_dir/'soybean2.mp4').touch()
-            output=folder/'output'
-            if existing_output:
-                (output/'soybean').mkdir(parents=True)
-                (output/'soybean/keep.txt').write_text('original result')
-            if label_fixture:
-                (data/'soybean/sparse/0').mkdir(parents=True)
-                for f in ('cameras.bin','images.bin','points3D.bin'):
-                    (data/'soybean/sparse'/f).write_text('registered model')
-            calls=folder/'calls.log'
-            conda=bin_dir/'conda'
-            conda.write_text("#!/bin/bash\nprintf 'GPU=%s ' \"$CUDA_VISIBLE_DEVICES\" >> \"$CALLS\"\nprintf '%s ' \"$@\" >> \"$CALLS\"\nprintf '\\n' >> \"$CALLS\"\nif [[ \"$*\" == *run_rubik_scene_auto.py* && \"${FAIL_MASK:-0}\" == 1 ]]; then exit 9; fi\nexit 0\n",encoding='utf-8')
-            if label_fixture:
-                conda.write_text(conda.read_text().replace('exit 0',
-                    'if [[ "$*" == *align_aruco_refine.py* ]]; then mkdir -p "$DATA_ROOT/soybean/sparse/aligned"; cp "$DATA_ROOT/soybean/sparse/"{cameras,images,points3D}.bin "$DATA_ROOT/soybean/sparse/aligned/"; fi\nexit 0'))
-            if multi_scene:
-                conda.write_text(conda.read_text().replace('exit 0',
-                    'if [[ "$*" == *convert.py* ]]; then while (($#)); do if [[ "$1" == --scene_path ]]; then shift; scene="$1"; fi; shift; done; mkdir -p "$scene/sparse"; for f in cameras.bin images.bin points3D.bin; do echo model > "$scene/sparse/$f"; done; fi\nexit 0'))
-            if videos:
-                conda.write_text(conda.read_text().replace('exit 0',
-                    'if [[ "$*" == *extract_frames.py* ]]; then while (($#)); do if [[ "$1" == --output_dir ]]; then shift; frames="$1"; fi; shift; done; touch "$frames/frame_000001.jpg"; fi\nexit 0'))
-                ffmpeg=bin_dir/'ffmpeg'
-                ffmpeg.write_text('#!/bin/bash\nprintf "Extract %s\\n" "$*" >> "$CALLS"\nfor arg in "$@"; do if [[ "$arg" == *frame_%06d.jpg ]]; then touch "${arg/frame_%06d.jpg/frame_000001.jpg}"; fi; done\n',encoding='utf-8')
-                ffmpeg.chmod(0o755)
-            conda.chmod(0o755)
-            env=os.environ.copy()
-            for key in ('CUDA_VISIBLE_DEVICES','GPU_ID','RUBIK_COUNT','FORCE','SCENE'):
-                env.pop(key,None)
-            env.update(PROJECT_ROOT=ROOT.as_posix(),DATA_ROOT=data.as_posix(),OUTPUT_ROOT=output.as_posix(),
-                       LOG_ROOT=(folder/'logs').as_posix(),CALLS=calls.as_posix(),FAKE_BIN=bin_dir.as_posix(),
-                       ENTRY=(ROOT/'run_batch_gpu1.sh').as_posix(),RUN_EXTRACT='0',RUN_COLMAP='0',
-                       RUN_MASK='1',RUN_ALIGN='0',RUN_LABEL='0',RUN_TRAIN='1',RUN_RENDER='0',RUN_EXPORT='1',
-                       FAIL_MASK='1' if fail_mask else '0')
-            if multi_scene:
-                env.update(RUN_COLMAP='1')
-            if videos:
-                env.update(RUN_EXTRACT='1',VIDEO_DIR=video_dir.as_posix())
-            if label_fixture:
-                env.update(RUN_MASK='0',RUN_ALIGN='1',RUN_LABEL='1',RUN_TRAIN='0',RUN_EXPORT='0')
-            # Git Bash converts the Windows temporary path; Linux uses it directly.
-            command='export PATH="$(cygpath -u "$FAKE_BIN"):$PATH"; exec bash "$ENTRY"' if os.name=='nt' else 'export PATH="$FAKE_BIN:$PATH"; exec bash "$ENTRY"'
-            result=subprocess.run([bash,'-c',command],env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding='utf-8',errors='replace')
-            log=calls.read_text(encoding='utf-8') if calls.exists() else ''
-            if existing_output:
-                self.assertEqual((output/'soybean/keep.txt').read_text(),'original result')
-            if label_fixture:
-                for f in ('cameras.bin','images.bin','points3D.bin'):
-                    self.assertEqual((data/'soybean/sparse/0'/f).read_text(),'registered model')
-            return result,log
-
-    def test_scene_finishes_before_next_video_is_extracted(self):
-        result,log=self.run_batch(multi_scene=True,videos=True)
-        self.assertEqual(result.returncode,0,result.stdout)
-        lines=log.splitlines()
-        second_extract=next(i for i,line in enumerate(lines) if '/extract_frames.py ' in line and 'soybean2.mp4' in line)
-        first_export=next(i for i,line in enumerate(lines) if '/export_target_gaussians.py ' in line and '/soybean/' in line)
-        second_colmap=next(i for i,line in enumerate(lines) if '/convert.py ' in line and '/soybean2 ' in line)
-        self.assertLess(first_export,second_extract)
-        self.assertLess(second_extract,second_colmap)
-
-    def test_existing_scenes_are_processed_serially(self):
-        result,log=self.run_batch(multi_scene=True)
-        self.assertEqual(result.returncode,0,result.stdout)
-        lines=log.splitlines()
-        first_export=next(i for i,line in enumerate(lines) if '/export_target_gaussians.py ' in line and '/soybean/' in line)
-        second_colmap=next(i for i,line in enumerate(lines) if '/convert.py ' in line and '/soybean2 ' in line)
-        self.assertLess(first_export,second_colmap)
-
-    def test_empty_sparse_zero_receives_aligned_model(self):
-        result,log=self.run_batch(label_fixture=True)
-        self.assertEqual(result.returncode,0,result.stdout)
-        self.assertIn('label_colmap_points_viewer.py',log)
-
-    def test_upstream_failure_blocks_training_and_export(self):
-        result,log=self.run_batch(fail_mask=True)
-        self.assertNotEqual(result.returncode,0,result.stdout)
-        self.assertIn('--rubik-count 1',log)
-        self.assertNotIn('/train.py ',log)
-        self.assertNotIn('/export_target_gaussians.py ',log)
-
-    def test_default_gpu_and_strict_parameters(self):
-        result,log=self.run_batch()
-        self.assertEqual(result.returncode,0,result.stdout)
-        self.assertIn('GPU=0 ',log)
-        self.assertIn('--semantic_pipeline',log)
-        self.assertIn('--mode strict --rubik-count 1',log)
-
-    def test_existing_results_are_not_deleted(self):
-        result,log=self.run_batch(existing_output=True)
-        self.assertEqual(result.returncode,0,result.stdout)
-        self.assertNotIn('/train.py ',log)
+# Coordinator regressions use only the standard library.
+from test_reconstruction_batch import BatchRegression
 
 
 if __name__ == '__main__': unittest.main(verbosity=2)
