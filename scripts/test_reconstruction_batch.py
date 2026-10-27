@@ -200,6 +200,14 @@ class BatchRegression(unittest.TestCase):
             with self.assertRaises(ValueError):
                 batch.configuration(dict(self.env, **changes))
 
+    def test_video_name_cannot_alias_data_or_output_root(self):
+        write(self.root / 'videos/...mp4', b'video')
+        worker = self.make()
+        with self.assertRaisesRegex(ValueError, 'Unsafe video scene name'):
+            worker.queue()
+        with self.assertRaisesRegex(ValueError, 'Unsafe scene name'):
+            worker.process('..', None)
+
     def test_scene_serial_failure_isolation_and_exit_status(self):
         write(self.root / 'videos/second.mp4', b'video-b')
         worker = self.make()

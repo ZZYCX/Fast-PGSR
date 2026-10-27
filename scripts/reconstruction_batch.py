@@ -189,6 +189,8 @@ class Batch:
                     continue
                 if self.cfg['SCENE'] and video.stem != self.cfg['SCENE']:
                     continue
+                if video.stem in ('.', '..') or '\\' in video.stem:
+                    raise ValueError('Unsafe video scene name: ' + video.name)
                 if video.stem in videos:
                     raise ValueError('Duplicate video scene name: ' + video.stem)
                 videos[video.stem] = video
@@ -397,6 +399,8 @@ class Batch:
             return False
 
     def process(self, name, video):
+        if not name or name in ('.', '..') or '/' in name or '\\' in name:
+            raise ValueError('Unsafe scene name')
         self.scene, self.model, self.video = self.data / name, self.output / name, video
         if self.scene.is_symlink() or self.model.is_symlink():
             raise ValueError('Symlink scene/output refused')
